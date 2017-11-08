@@ -72,20 +72,3 @@ and use it to check if you can log into Docker Hub and Docker Cloud.
 [Sign up for a free trial](https://app.datadoghq.com/signup/) and obtain your API key. Save it someplace safe.
 
 Open your DataDog dashboard after that.
-
-## Skeleton
-
-Now that all the tooling is done, let's set up the first repository by taking into account the following checklist:
-
-- Choose technologies and frameworks
-- Build and package management tools
-- Unit and integration testing libraries
-- Configuration management (environment variables)
-- Linting / code formatting
-- Coverage set up for unit testing with enforced thresholds
-- Dynamic documentation libraries (if it’s the case)
-- Logging libraries for generic server logging + access logging
-- Healthcheck / Status URLs
-- Tools for running locally
-- Deployment (scripts, packaging, pipeline support)
-- Update README containing instructions on how to build and run

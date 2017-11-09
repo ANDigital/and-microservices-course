@@ -1,5 +1,9 @@
 # Labs
 
+## Setup
+
+Follow the instructions in [SETUP.md](SETUP.md) to get started.
+
 ## Plan the work ahead
 
 Add tasks to Trello and manage between the team. You can see what the requirements are below
@@ -20,6 +24,8 @@ Now that all the tooling is done, let's set up the first repository by taking in
 - Tools for running locally
 - Deployment (scripts, packaging, pipeline support)
 - Update README containing instructions on how to build and run
+
+**Respect the [DOD](DOD.md)!**
 
 ## Implement the API
 

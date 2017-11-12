@@ -29,11 +29,12 @@ Now that all the tooling is done, let's set up the first repository by taking in
 
 ## Implement the API
 
-Implement the chosen API by reverse engineering the monolith. Do one endpoint at a time to make it easier. Remember REST <3
+Choose one of the existing features of the monolith and implement it in an API by reverse engineering the monolith. 
+Do one endpoint at a time to make it easier. Remember REST standards :heart:
 
 Take into account everything that was discussed and don't forget about **Testing** and **Documentation**.
 
-Any architecture decisions should be raised to the group and discussed (e.g. you plan on using a queue).
+Any architecture decisions should be raised to the group and discussed.
 
 ## Write your CI pipeline
 

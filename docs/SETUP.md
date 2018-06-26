@@ -6,6 +6,16 @@
 
 [Open the Trello board](https://trello.com/b/IKwQ0ljq/microservices-course) so you can collaborate as a team.
 
+## Slack
+
+Any relevant integrations that we need can be added to Slack - GitHub, CircleCI / TravisCI, Trello etc.
+
+Please create a public channel for your team, for example #team-1337
+
+## Trello
+
+Please create a label for your team name that you can use whenever you create tasks for your team.
+
 ## GitHub
 
 First things first, [create an account](https://github.com) if you don't have one and let's start setting up GitHub so it can respect the DoD:
@@ -27,12 +37,6 @@ First things first, [create an account](https://github.com) if you don't have on
 Now that we have our GitHub set up, it's time to set up either [TravisCI](https://travis-ci.org/) or [CircleCI](https://circleci.com/signup/)
 
 Configure your repositories there accordingly, there's no need to start writing YML files *right now*.
-
-## Slack
-
-Any relevant integrations that we need can be added to Slack - GitHub, CircleCI / TravisCI, Trello etc.
-
-Please create a public channel for your team, for example #team-1337
 
 ## Heroku
 

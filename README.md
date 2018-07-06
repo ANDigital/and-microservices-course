@@ -1,112 +1,87 @@
-# monolith
-This application was generated using JHipster 4.5.6, you can find documentation and help at [https://jhipster.github.io/documentation-archive/v4.5.6](https://jhipster.github.io/documentation-archive/v4.5.6).
+# Setup
 
-## Development
+Here is the initial setup you need to do before starting the labs.
 
-Before you can build this project, you must install and configure the following dependencies on your machine:
+## Collaboration
 
-1. [Node.js][]: We use Node to run a development web server and build the project.
-   Depending on your system, you can install Node either from source or as a pre-packaged bundle.
-2. [Yarn][]: We use Yarn to manage Node dependencies.
-   Depending on your system, you can install Yarn either from source or as a pre-packaged bundle.
+[Open the Trello board](https://trello.com/b/IKwQ0ljq/microservices-course) so you can collaborate as a team.
 
-After installing Node, you should be able to run the following command to install development tools.
-You will only need to run this command when dependencies change in [package.json](package.json).
+[Join Slack](https://join.slack.com/t/microservices-course/signup) using your email address or via the invite you received.
 
-    yarn install
+## Trello
 
-We use [Gulp][] as our build system. Install the Gulp command-line tool globally with:
+Please create a label for your team name that you can use whenever you create tasks for your team.
 
-    yarn global add gulp-cli
+## Slack
 
-Run the following commands in two separate terminals to create a blissful development experience where your browser
-auto-refreshes when files change on your hard drive.
+Any relevant integrations that we need can be added to Slack - GitHub, CircleCI / TravisCI, Trello etc.
 
-    ./mvnw
-    gulp
+Please create a public channel for your team, for example #team-1337
 
-[Bower][] is used to manage CSS and JavaScript dependencies used in this application. You can upgrade dependencies by
-specifying a newer version in [bower.json](bower.json). You can also run `bower update` and `bower install` to manage dependencies.
-Add the `-h` flag on any command to see how you can use it. For example, `bower update -h`.
+## GitHub
 
-For further instructions on how to develop with JHipster, have a look at [Using JHipster in development][].
+First things first, [create an account](https://github.com) if you don't have one and let's start setting up GitHub so it can respect the DoD:
 
+1. Fork the project into your personal account so you can make any changes. 
+2. Set up an Organisation and invite your team to it
+3. Create your first repository for the API you're building in the Organisation
+4. Configure the repository in the following way:
+   * Only allow squash commits (in the main settings page)
+   * Branches section, add **master** as your Protected Branch
+   * Click Edit and select 'Protect this branch', then the following:
+        * 'Require pull request reviews before merging'
+        * 'Require status checks to pass before merging' -> 'Require branches to be up to date before merging'
+        * 'Include administrators'
+5. Your GitHub project is now ready for collaboration
 
-## Building for production
+## CI
 
-To optimize the monolith application for production, run:
+Now that we have our GitHub set up, it's time to set up either [TravisCI](https://travis-ci.org/) or [CircleCI](https://circleci.com/signup/).
 
-    ./mvnw -Pprod clean package
+Feel free to set up any other tool that you feel comfortable with, but it should be something similar (SaaS solution).
 
-This will concatenate and minify the client CSS and JavaScript files. It will also modify `index.html` so it references these new files.
-To ensure everything worked, run:
+Configure your repositories there accordingly, there's no need to start writing YML files *right now*.
 
-    java -jar target/*.war
+## AWS
 
-Then navigate to [http://localhost:8080](http://localhost:8080) in your browser.
+We have created a special AWS account for you to use. You will get full access to this account until the end of the course so
+you can provision the infrastructure you need.
 
-Refer to [Using JHipster in production][] for more details.
+Each team will get a single account with credentials and access keys so we don't lose precious time settings this up.
 
-## Testing
+Please go to the [sign up link](https://and-course-sandbox.signin.aws.amazon.com/console) with the credentials provided.
 
-To launch your application's tests, run:
+## Docker Hub and Docker Cloud
 
-    ./mvnw clean test
+We will be using Docker so we need to have a Docker ID, please set up one [here](https://hub.docker.com/) and use it to check if 
+you can log into the following:
 
-### Client tests
+### Docker Hub
 
-Unit tests are run by [Karma][] and written with [Jasmine][]. They're located in [src/test/javascript/](src/test/javascript/) and can be run with:
+1. Create an [organisation](https://hub.docker.com/organizations/) and add your team members to it
+2. Create a [repository](https://hub.docker.com/add/repository/) for that organisation and leave it as *public* for now
 
-    gulp test
+### Docker Cloud
 
-UI end-to-end tests are powered by [Protractor][], which is built on top of WebDriverJS. They're located in [src/test/javascript/e2e](src/test/javascript/e2e)
-and can be run by starting Spring Boot in one terminal (`./mvnw spring-boot:run`) and running the tests (`gulp itest`) in a second one.
+1. Go to [Docker Cloud](https://cloud.docker.com/) and select your organisation from the top right corner
+2. Enable *Swarm mode* toggle 
+3. Click the big *+* button and select *Swarm*
+4. Give it a name (e.g. *my-swarm-cluster*)
+5. Select AWS as the Provider and follow the instruction to connect it to Docker Cloud.
+6. Once connected, select *Stable* from the dropdown menu
+7. Select *eu-west-1* as your region (for example)
+8. Press **Create** and give it time.
 
-For more information, refer to the [Running tests page][].
+## DataDog
 
-## Using Docker to simplify development (optional)
+[Sign up for a free trial](https://app.datadoghq.com/signup/) and obtain your API key. Save it someplace safe.
 
-You can use Docker to improve your JHipster development experience. A number of docker-compose configuration are available in the [src/main/docker](src/main/docker) folder to launch required third party services.
-For example, to start a mongodb database in a docker container, run:
+We will use DataDog for both monitoring and aggregated logging.
 
-    docker-compose -f src/main/docker/mongodb.yml up -d
+## Alternative - Heroku
 
-To stop it and remove the container, run:
+[Sign up to a free account](https://id.heroku.com/signup/login) to get started, create a team and give the relevant people access to it.
 
-    docker-compose -f src/main/docker/mongodb.yml down
+Then connect your Heroku app with your GitHub account for the given repository.
 
-You can also fully dockerize your application and all the services that it depends on.
-To achieve this, first build a docker image of your app by running:
-
-    ./mvnw package -Pprod docker:build
-
-Then run:
-
-    docker-compose -f src/main/docker/app.yml up -d
-
-For more information refer to [Using Docker and Docker-Compose][], this page also contains information on the docker-compose sub-generator (`jhipster docker-compose`), which is able to generate docker configurations for one or several JHipster applications.
-
-## Continuous Integration (optional)
-
-To configure CI for your project, run the ci-cd sub-generator (`jhipster ci-cd`), this will let you generate configuration files for a number of Continuous Integration systems. Consult the [Setting up Continuous Integration][] page for more information.
-
-[JHipster Homepage and latest documentation]: https://jhipster.github.io
-[JHipster 4.5.6 archive]: https://jhipster.github.io/documentation-archive/v4.5.6
-
-[Using JHipster in development]: https://jhipster.github.io/documentation-archive/v4.5.6/development/
-[Using Docker and Docker-Compose]: https://jhipster.github.io/documentation-archive/v4.5.6/docker-compose
-[Using JHipster in production]: https://jhipster.github.io/documentation-archive/v4.5.6/production/
-[Running tests page]: https://jhipster.github.io/documentation-archive/v4.5.6/running-tests/
-[Setting up Continuous Integration]: https://jhipster.github.io/documentation-archive/v4.5.6/setting-up-ci/
-
-
-[Node.js]: https://nodejs.org/
-[Yarn]: https://yarnpkg.org/
-[Bower]: http://bower.io/
-[Gulp]: http://gulpjs.com/
-[BrowserSync]: http://www.browsersync.io/
-[Karma]: http://karma-runner.github.io/
-[Jasmine]: http://jasmine.github.io/2.0/introduction.html
-[Protractor]: https://angular.github.io/protractor/
-[Leaflet]: http://leafletjs.com/
-[DefinitelyTyped]: http://definitelytyped.org/
+We'll look at build packs and Procfiles later on :)

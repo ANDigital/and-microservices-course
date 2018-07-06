@@ -2,17 +2,16 @@
 
 ## Setup
 
-Follow the instructions in [SETUP.md](SETUP.md) to get started.
+Follow the instructions in [README.md](../README.md) to get started on setting up your tooling and environment.
 
 ## Plan the work ahead
 
-Add tasks to Trello and manage between the team. You can see what the requirements are below
+Add tasks to Trello and manage between the team. You can see what the requirements are below.
 
 ## Skeleton API
 
-Now that all the tooling is done, let's set up the first repository by taking into account the following checklist:
+Now that all the tooling is done, we'll create our first repository by taking into account the following must-have checklist:
 
-- Choose technologies and frameworks
 - Build and package management tools
 - Unit and integration testing libraries
 - Configuration management (environment variables)
@@ -25,7 +24,10 @@ Now that all the tooling is done, let's set up the first repository by taking in
 - Deployment (scripts, packaging, pipeline support)
 - Update README containing instructions on how to build and run
 
-**Respect the [DOD](DOD.md)!**
+We have provided some skeletons in the following folders:
+
+* Java with Spring Boot - [java-spring-skeleton](../templates/java-spring-skeleton)
+* NodeJS with Express - [node-express-skeleton](../templates/node-express-skeleton)
 
 ## Implement the API
 
@@ -43,14 +45,6 @@ Discuss with the wider group on how you would design your CI pipeline and implem
 Remember to set up some Slack notifications here ;)
 
 There will be more things to add of course once we cover deployment.
-
-## Deploy to Heroku
-
-Configure your build pack for the application you built if the default one / provided one is not suitable.
-
-Look at [Procfiles]() and how those work in case your application does not start in Heroku.
-
-Please remember this is not using Docker, it's a vanilla deployment of your app - we will not be adding this into the CI pipeline!
 
 ## Docker
 
@@ -160,6 +154,15 @@ for your project and integrating it into CircleCI so we can have reports for eve
 
 Download [Burp](https://portswigger.net/burp) and run some tests on top of your API to see the output.
 A similar tool is be [SourceClear](https://sourceclear.io/) that you can also experiment with, your choice.
+
+## Alternative - Deploy to Heroku
+
+Configure your build pack for the application you built if the default one / provided one is not suitable.
+
+Look at [Procfiles]() and how those work in case your application does not start in Heroku.
+
+Please remember this is not using Docker, it's a vanilla deployment of your app - we will not be adding this into the CI pipeline!
+
 
 ## End
 

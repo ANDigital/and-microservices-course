@@ -34,13 +34,27 @@ First things first, [create an account](https://github.com) if you don't have on
         * 'Include administrators'
 5. Your GitHub project is now ready for collaboration
 
-## CI
+## Pipelines
 
-Now that we have our GitHub set up, it's time to set up either [TravisCI](https://travis-ci.org/) or [CircleCI](https://circleci.com/signup/).
+### CI
+
+Now that we have our GitHub set up, it's time to set up either [TravisCI](https://travis-ci.org/) / [CircleCI](https://circleci.com/signup/).
 
 Feel free to set up any other tool that you feel comfortable with, but it should be something similar (SaaS solution).
 
 Configure your repositories there accordingly, there's no need to start writing YML files *right now*.
+
+### Code coverage
+
+We will be using [Codecov](http://codecov.io) to upload our code coverage reports and integrate with GitHub status checks.
+
+Please navigate to https://codecov.io/gh and create an account.
+
+### Static analysis
+
+We will be using [Codacy](https://codacy.com) to perform some static analysis for us - it integrates nicely with GitHub status checks.
+
+Please navigate to https://app.codacy.com/projects and create an account.
 
 ## AWS
 
@@ -51,37 +65,36 @@ Each team will get a single account with credentials and access keys so we don't
 
 Please go to the [sign up link](https://and-course-sandbox.signin.aws.amazon.com/console) with the credentials provided.
 
-## Docker Hub and Docker Cloud
+## Docker Hub
 
-We will be using Docker so we need to have a Docker ID, please set up one [here](https://hub.docker.com/) and use it to check if 
-you can log into the following:
-
-### Docker Hub
+We will be using Docker so we need to have a Docker ID, please set up one [here](https://hub.docker.com/) and then:
 
 1. Create an [organisation](https://hub.docker.com/organizations/) and add your team members to it
 2. Create a [repository](https://hub.docker.com/add/repository/) for that organisation and leave it as *public* for now
 
-### Docker Cloud
+## Docker Swarm
 
-1. Go to [Docker Cloud](https://cloud.docker.com/) and select your organisation from the top right corner
-2. Enable *Swarm mode* toggle 
-3. Click the big *+* button and select *Swarm*
-4. Give it a name (e.g. *my-swarm-cluster*)
-5. Select AWS as the Provider and follow the instruction to connect it to Docker Cloud.
-6. Once connected, select *Stable* from the dropdown menu
-7. Select *eu-west-1* as your region (for example)
-8. Press **Create** and give it time.
+We will be using Docker Swarm for our orchestration layer (similar to Amazon ECS, Kubernetes, Rancher etc.)
+
+Here is a list of steps to configure it inside the AWS account:
+
+1. Once logged into AWS, open the following link: https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=my-stack&templateURL=https://editions-us-east-1.s3.amazonaws.com/aws/stable/Docker-no-vpc.tmpl
+2. Click Next and rename the stack to your teams' name.
+3. Set the following parameters:
+    * Number of Swarm managers: 1
+    * Number of Swarm worker nodes: 1
+    * Which SSH key to use: docker-swarm (please find this SSH key in [keys/docker-swarm.pem](keys/docker-swarm.pem))
+    * Swarm manager instance type: t2.medium
+    * Agent worker instance type: t2.medium
+    * VPC: default (vpc-74327812)
+    * VPC CIDR block: 172.31.0.0/16
+    * Public subnet 1 to 3: select all 3 defined subnets
+4. Click Next to get to the final screen and tick *I acknowledge that AWS CloudFormation might create IAM resources.*
+5. Wait for the stack to become ready, look at the Outputs tab and save the value of *DefaultDNSTarget* (this is going to be
+our load balancer that we will access).
 
 ## DataDog
 
 [Sign up for a free trial](https://app.datadoghq.com/signup/) and obtain your API key. Save it someplace safe.
 
-We will use DataDog for both monitoring and aggregated logging.
-
-## Alternative - Heroku
-
-[Sign up to a free account](https://id.heroku.com/signup/login) to get started, create a team and give the relevant people access to it.
-
-Then connect your Heroku app with your GitHub account for the given repository.
-
-We'll look at build packs and Procfiles later on :)
+We will use DataDog for monitoring.

@@ -24,60 +24,82 @@ Now that all the tooling is done, we'll create our first repository by taking in
 - Deployment (scripts, packaging, pipeline support)
 - Update README containing instructions on how to build and run
 
-We have provided some skeletons in the following folders:
+We have provided some skeletons in the following folders, please use them:
 
-* Java with Spring Boot - [java-spring-skeleton](../templates/java-spring-skeleton)
-* NodeJS with Express - [node-express-skeleton](../templates/node-express-skeleton)
+* Java with Spring Boot - [java-spring-skeleton](../examples/java-spring-skeleton)
+* NodeJS with Express - [node-express-skeleton](../examples/node-express-skeleton)
 
-## Implement the API
+## Implement the first API
 
-Choose one of the existing features of the monolith and implement it in an API by reverse engineering the monolith. 
-Do one endpoint at a time to make it easier. Remember REST standards :heart:
+TODO - @mihaianghel
 
-Take into account everything that was discussed and don't forget about **Testing** and **Documentation**.
+## Integrate with your tooling
 
-Any architecture decisions should be raised to the group and discussed.
+Now that you have your first API, let's integrate it with Codecov and Codacy through GitHub.
+
+### Codecov
+
+Navigate to https://codecov.io/gh and set up your project. You will get a token which you can use to upload the reports
+(you will find an example in the section below for CI), but it's something like:
+
+```bash
+bash <(curl -s https://codecov.io/bash) -t <TOKEN_GOES_HERE>
+```
+
+Once done, you can retrieve the badge from the settings tab and place it in your README file.
+
+### Codacy
+
+Navigate to https://app.codacy.com/projects and set up your project. It should be nicely integrated with GitHub and
+the branch status checks. You can also set up a Slack integration in there.
+
+Once done, you can retrieve the badge from the settings tab and place it in your README file.
 
 ## Write your CI pipeline
 
-Discuss with the wider group on how you would design your CI pipeline and implement as much as you can from it now.
+*Note*: A sample pipeline for a Java app has been provided for CircleCI in [examples/.circleci/config.yml](examples/.circleci/config.yml).
 
-Remember to set up some Slack notifications here ;)
+Discuss with the wider group on how you would design your CI pipeline and implement as much as you can at this stage.
 
-There will be more things to add of course once we cover deployment.
+There will be more things to add once we cover deployment. Don't forget to add some Slack integrations :)
 
 ## Docker
 
 Adapt your CI pipeline to build your containers, check if they are healthy, run any relevant tests and push them to 
-Docker Hub.
+Docker Hub (on the organisation you set up previously).
 
 ## Deployment
 
-Go to Docker Cloud and click the 3 dots (menu) for your cluster and select *Edit endpoint*. Copy the value and 
-save it someplace safe.
-
-Follow instructions in Docker Cloud to connect to your remote Docker Swarm cluster from your terminal:
+Because of the current setup, we all commands need to be run on the Master node via SSH. So we make things easier, we'll setup
+a SSH tunnel in the background that will forward all commands to the Swarm cluster (use the SSH key provided before):
 
 ```bash
-docker run --rm -ti -v /var/run/docker.sock:/var/run/docker.sock -e DOCKER_HOST dockercloud/client DOCKER-HUB-ORG/NAME-OF-SWARM
+ssh -i ~/.ssh/docker-swarm.pem -NL localhost:2374:/var/run/docker.sock docker@YOUR_MASTER_PUBLIC_IP &
 ```
 
-Once you have set up that, run a `docker node ls` in your terminal. It should show the relevant *master* and *workers*,
+So you avoid providing the host parameter every single time you execute a Docker command, just set the following environment variable:
+
+```bash
+export DOCKER_HOST=localhost:2374
+```
+
+**Note**: Please note that because of the `export`, the commands will only work correctly in one Terminal tab. You should add this
+variable to your bash profile if you want it persisted across sessions.
+
+Once all this is done you can run a `docker node ls` in your terminal. It should show the relevant *master* and *workers*,
 like this:
 
+```bash
+ID                            HOSTNAME                                      STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
+zq0hq9jnr12hl5mlj82gg1ede     ip-172-31-45-109.eu-west-1.compute.internal   Ready               Active                                  18.03.0-ce
+h1hrrisxojt2qzq2qkxa6jua3 *   ip-172-31-46-163.eu-west-1.compute.internal   Ready               Active              Leader              18.03.0-ce
 ```
-ID                            HOSTNAME                                     STATUS              AVAILABILITY        MANAGER STATUS
-22yegj5hykhlx1rd5rb1o17rj     ip-172-31-8-166.eu-west-2.compute.internal   Ready               Active
-ub6zkmmjqta51o0r37fu9puwe *   ip-172-31-13-55.eu-west-2.compute.internal   Ready               Active              Leader
-```
 
-Time to learn some Docker Swarm stuff - https://docs.docker.com/engine/swarm/
+### Visualisation
 
-## Visualisation
+Now that we have our Docker Swarm set up in AWS, although the CLI is great, we want to add an UI on top of it.
 
-Now that we have our Docker Swarm set up in Docker Cloud, although the CLI is great, we want to add an UI on top of it.
-
-Meet [portainer](https://portainer.io). Please follow the installatio instructions to set it up on your manager host in 
+Meet [portainer](https://portainer.io). Please follow the installation instructions to set it up on your manager host in 
 Docker Swarm:
 
 ```bash
@@ -91,78 +113,66 @@ docker service create \
     -H unix:///var/run/docker.sock
 ```
 
-Then access your Docker Cloud URL (the one you retrieved before) on port `9000`, e.g:
+Then access your Load Balancer DNS on port `9000`, e.g:
 
-`http://my-swarm-externall-1s0ocz82ytsk-1353545282.eu-west-2.elb.amazonaws.com:9000`
+`http://paul-stac-external-16zr3nakv2156-610205253.eu-west-1.elb.amazonaws.com:9000/`
+
+### Deploy your API
+
+Now you need to deploy your API in Docker Swarm and expose it, similar to Portainer. Please add multiple replicas for
+scalability.
+
+Once you have done this, please adapt your CI pipeline to do this deployment automatically for every *master branch commit*.
+
+## Implement the second API
+
+TODO - @mihaianghel
 
 ## NFRs
 
 ### Monitoring
 
-Connect DataDog into your Docker Swarm cluster by following the instructions [here](https://docs.datadoghq.com/guides/autodiscovery/)
-
-Essentially, the only thing you need is to create a new Swarm service that will bind to all masters and workers and start
+Connect DataDog into your Docker Swarm by creating a new Swarm service that will bind to all masters and workers and start
 the DataDog agent to start fetching metrics:
 
 ```bash
 docker service create \
-    --name dd-agent \
+    --name datadog-agent \
     --mode global \
-    --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
+    --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock,ro=true \
     --mount type=bind,source=/proc/,target=/host/proc/,ro=true \
     --mount type=bind,source=/sys/fs/cgroup/,target=/host/sys/fs/cgroup,ro=true \
-    -e API_KEY=<YOUR_DATADOG_API_KEY> \
-    -e SD_BACKEND=docker \
-    datadog/docker-dd-agent
+    -e DD_API_KEY=<YOUR_DATADOG_API_KEY> \
+    datadog/agent
 ```
 
-Explore the Dashboard by going to the DataDog website - enjoy :)
+Then go to DataDog and install the [Docker integration](https://app.datadoghq.com/account/settings#integrations/docker)
 
-### Logging and log aggregation
+Explore the Dashboard by going to the DataDog website: 
+- Host map - https://app.datadoghq.com/infrastructure/map
+- Host dashboard - https://app.datadoghq.com/dash/integration/1/system---overview
+- Container list - https://app.datadoghq.com/containers
+- Docker dashboard - https://app.datadoghq.com/screen/integration/52/docker
+- Logs - https://app.datadoghq.com/logs
 
-[ELK stack](https://www.elastic.co/products) (Elastic Search, Logstash, Kibana) is one of the most popular open source
-tools for log retrieval and aggregation + visualisation.
+*Optional*: If you have extra time on your hands, feel free to also integrate AWS into DataDog.
 
-In order to have this working across the entire Docker Swarm cluster, we need to [set it up](https://github.com/ahromis/swarm-elk)
-as a stack within Swarm. This can be done either from the CLI or from Portainer.
+### Logging
 
-Setting up in both is very straightforward - but please make sure you set the `vm.max_map_count` as instructed.
-
-Once that is done, you can navigate to the Kibana dashboard on port 5061:
-
-`http://my-swarm-externall-1s0ocz82ytsk-1353545282.eu-west-2.elb.amazonaws.com:5601`
+The stack we created comes with aggregated logging of Docker logs into CloudWatch @ https://eu-west-1.console.aws.amazon.com/cloudwatch/home?region=eu-west-1#logs:
 
 ### Performance
 
 Performance is always an interesting one as it's a pain to do simply because of the infrastructure requirements.
+
 For the purpose of this training, we will be running some performance tests from our laptops using [Locust](https://locust.io/)
 
-Please run two types of tests for your API:
+Please write and run two types of tests for your API:
 
 - High concurrency = as many users as possible hitting the application at the same time.
 - High throughput = not too many users, but high load on the application
 
 Use *DataDog* to monitor the behaviour of our application and use the *Locust* dashboard to check test results.
-
-### Security
-
-Security needs to be done at two levels - static analysis using plugins similar to Sonar (described below) and run 
-every once in a while (daily, weekly, before releases etc.) as a penetration test using tools like Burp and SourceClear.
-
-Set up a [SonarCloud](https://sonarcloud.io) account and grant the relevant people access. Then look into setting it up
-for your project and integrating it into CircleCI so we can have reports for every build.
-
-Download [Burp](https://portswigger.net/burp) and run some tests on top of your API to see the output.
-A similar tool is be [SourceClear](https://sourceclear.io/) that you can also experiment with, your choice.
-
-## Alternative - Deploy to Heroku
-
-Configure your build pack for the application you built if the default one / provided one is not suitable.
-
-Look at [Procfiles]() and how those work in case your application does not start in Heroku.
-
-Please remember this is not using Docker, it's a vanilla deployment of your app - we will not be adding this into the CI pipeline!
-
 
 ## End
 

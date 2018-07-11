@@ -1,13 +1,15 @@
 defaults: &jdk
   docker:
     - image: circleci/openjdk:8-jdk
+      environment:
+        CODECOV_TOKEN: codecov-token-goes-here
 
 defaults: &docker
   docker:
     - image: quay.io/paulpop/docker-compose
       environment:
-        DOCKER_LOGIN: username
-        DOCKER_PASSWORD: password
+        DOCKER_LOGIN: docker-id-username-goes-here
+        DOCKER_PASSWORD: docker-id-password-goes-here
         APP_NAME: java-skeleton-service
         IMAGE_NAME: quay.io/paulpop/java-skeleton-service
 
@@ -71,7 +73,7 @@ jobs:
             docker run --network container:$APP_NAME mwendler/wget -qO- \
               --retry-connrefused --tries=10 --waitretry 6 http://localhost:8080/health
       - run:
-          name: Push image to Docker Hub
+          name: Push image to Quay
           command: |
             if [[ $CIRCLE_BRANCH == 'master' ]]; then
                 docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD quay.io

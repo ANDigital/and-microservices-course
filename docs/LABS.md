@@ -26,8 +26,8 @@ Now that all the tooling is done, we'll create our first repository by taking in
 
 We have provided some skeletons in the following folders, please use them:
 
-* Java with Spring Boot - [java-spring-skeleton](../examples/java-spring-skeleton)
-* NodeJS with Express - [node-express-skeleton](../examples/node-express-skeleton)
+* Java with Spring Boot - [java-spring-service](../examples/java-spring-service)
+* NodeJS with Express - [node-express-service](../examples/node-express-service)
 
 ## Implement the first API
 

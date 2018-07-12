@@ -70,11 +70,19 @@ Docker Hub (on the organisation you set up previously).
 
 ## Deployment
 
-Because of the current setup, we all commands need to be run on the Master node via SSH. So we make things easier, we'll setup
-a SSH tunnel in the background that will forward all commands to the Swarm cluster (use the SSH key provided before):
+Because of the current setup, we ned all commands to be run on the Master node via SSH. So to make things easier, we'll setup
+a SSH tunnel in the background that will forward all commands to the Swarm cluster (use the SSH key provided before).
+
+Before we do that though, you have to SSH to the master node and add the host to your known hosts (by typing 'yes' once you SSH):
 
 ```bash
-ssh -i ~/.ssh/docker-swarm.pem -NL localhost:2374:/var/run/docker.sock docker@YOUR_MASTER_PUBLIC_IP &
+ssh -i ~/.ssh/docker-swarm.pem docker@YOUR_MASTER_INSTANCE_PUBLIC_IP
+```
+
+After that, create the SSH tunnel:
+
+```bash
+ssh -i ~/.ssh/docker-swarm.pem -NL localhost:2374:/var/run/docker.sock docker@YOUR_MASTER_INSTANCE_PUBLIC_IP &
 ```
 
 So you avoid providing the host parameter every single time you execute a Docker command, just set the following environment variable:
@@ -117,6 +125,8 @@ Then access your Load Balancer DNS on port `9000`, e.g:
 
 `http://paul-stac-external-16zr3nakv2156-610205253.eu-west-1.elb.amazonaws.com:9000/`
 
+*Note*: It might take a few minutes for this to become available.
+
 ### Deploy your API
 
 Now you need to deploy your API in Docker Swarm and expose it, similar to Portainer. Please add multiple replicas for
@@ -153,7 +163,6 @@ Explore the Dashboard by going to the DataDog website:
 - Host dashboard - https://app.datadoghq.com/dash/integration/1/system---overview
 - Container list - https://app.datadoghq.com/containers
 - Docker dashboard - https://app.datadoghq.com/screen/integration/52/docker
-- Logs - https://app.datadoghq.com/logs
 
 *Optional*: If you have extra time on your hands, feel free to also integrate AWS into DataDog.
 
@@ -177,4 +186,3 @@ Use *DataDog* to monitor the behaviour of our application and use the *Locust* d
 ## End
 
 :clap: :clap: :clap:
-

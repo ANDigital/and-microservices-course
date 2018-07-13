@@ -113,7 +113,7 @@ Docker Swarm:
 ```bash
 docker service create \
     --name portainer \
-    --publish 9000:9000 \
+    --publish 9001:9000 \
     --replicas=1 \
     --constraint 'node.role == manager' \
     --mount type=bind,src=//var/run/docker.sock,dst=/var/run/docker.sock \
@@ -121,9 +121,9 @@ docker service create \
     -H unix:///var/run/docker.sock
 ```
 
-Then access your Load Balancer DNS on port `9000`, e.g:
+Then access your Load Balancer DNS on port `9001`, e.g:
 
-`http://paul-stac-external-16zr3nakv2156-610205253.eu-west-1.elb.amazonaws.com:9000/`
+`http://paul-stac-external-16zr3nakv2156-610205253.eu-west-1.elb.amazonaws.com:9001/`
 
 *Note*: It might take a few minutes for this to become available.
 
@@ -175,6 +175,10 @@ The stack we created comes with aggregated logging of Docker logs into CloudWatc
 Performance is always an interesting one as it's a pain to do simply because of the infrastructure requirements.
 
 For the purpose of this training, we will be running some performance tests from our laptops using [Locust](https://locust.io/)
+
+```bash
+pip install locustio
+```
 
 Please write and run two types of tests for your API:
 

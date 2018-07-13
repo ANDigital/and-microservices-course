@@ -172,18 +172,21 @@ The stack we created comes with aggregated logging of Docker logs into CloudWatc
 
 ### Performance
 
-Performance is always an interesting one as it's a pain to do simply because of the infrastructure requirements.
-
 For the purpose of this training, we will be running some performance tests from our laptops using [Locust](https://locust.io/)
 
 ```bash
 pip install locustio
 ```
 
-Please write and run two types of tests for your API:
+There is an example in [../examples/locust/locustfile.py](../examples/locust/locustfile.py) on running a test on top of the
+Skeleton API that was provided. In order to start the locust server, you have to run the following:
 
-- High concurrency = as many users as possible hitting the application at the same time.
-- High throughput = not too many users, but high load on the application
+```bash
+locust -f ../examples/locust/locustfile.py --host=http://YOUR_REMOTE_HOST:YOUR_REMOTE_PORT
+```
+
+We suggest you start of with 100 users and a hatch rate of 10, see how it behaves. Then try to push it as much as you can and
+see how many TPS can you get to for your API :)
 
 Use *DataDog* to monitor the behaviour of our application and use the *Locust* dashboard to check test results.
 

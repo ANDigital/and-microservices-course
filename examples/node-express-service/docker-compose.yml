@@ -1,0 +1,16 @@
+version: '3.5'
+
+services:
+  api:
+    build: .
+    container_name: node-express-service
+    image: quay.io/paulpop/node-express-service
+    ports:
+      - "8080:8080"
+    networks:
+      - overlay
+    environment:
+      - ENVIRONMENT=${ENVIRONMENT}
+
+networks:
+  overlay:

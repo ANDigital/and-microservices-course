@@ -1,0 +1,72 @@
+defaults: &node
+  docker:
+    - image: circleci/node:8
+
+defaults: &docker
+  docker:
+    - image: quay.io/paulpop/docker-compose
+      environment:
+        APP_NAME: node-express-service
+        IMAGE_NAME: quay.io/paulpop/node-express-service
+
+version: 2
+jobs:
+  build:
+    <<: *node
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependencies-{{ checksum "package.json" }}
+      - run:
+          name: Install dependencies
+          command: yarn install
+      - save_cache:
+          key: dependencies-{{ checksum "package.json" }}
+          paths:
+            - ~/node_modules
+      - run:
+          name: Check code formatting
+          command: yarn lint
+      - run:
+          name: Run tests and upload to Codecov
+          command: |
+            yarn test
+            bash <(curl -s https://codecov.io/bash) -t $CODECOV_TOKEN
+
+  docker:
+    <<: *docker
+    steps:
+      - checkout
+      - setup_remote_docker
+      - attach_workspace:
+          at: .
+      - run:
+          name: Build container with the git commit sha version and latest version
+          command: docker build -t $IMAGE_NAME:$CIRCLE_SHA1 -t $IMAGE_NAME .
+      - run:
+          name: Start container and verify it's healthy
+          command: |
+            set -x
+            docker-compose up -d
+            docker run --network container:$APP_NAME mwendler/wget -qO- \
+              --retry-connrefused --tries=10 --waitretry 6 http://localhost:8080/health
+      - run:
+          name: Push image to Quay
+          command: |
+            if [[ $CIRCLE_BRANCH == 'master' ]]; then
+                docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD quay.io
+                docker push $IMAGE_NAME:$CIRCLE_SHA1
+                docker push $IMAGE_NAME
+            else
+                echo Skipping this step as we are not on 'master' branch
+            fi
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build
+      - docker:
+          context: default
+          requires:
+            - build

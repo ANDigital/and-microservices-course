@@ -31,6 +31,26 @@ We have provided some skeletons in the following folders, please use them:
 
 ## Implement the first API
 
+### JWT
+
+Before you start your first API, you are given a JWT (found inside [../keys/jwt](../keys/kwt) that you have to decode 
+in your service before you allow the request coming in (so an interceptor or filter would be best here). 
+
+You don't need to do any  signature verification, expiration and claim checks for this (which normally have to happen), 
+you just have to decode it and extract the relevant values:
+
+- *sub* - this is the user id that you have to use
+- *https://and.digital/role* claim - you have to check that this is equal to `USER`
+
+As a bonus, if you have extra time, you can check implement additional validation checks:
+
+- check the audience claim matches `microservices-in-anger-course`
+- check the iss claim matches `https://and.digital`
+- check the token is not expired (this should not be the case, the generated token expires in one year)
+- check it's signed correctly (it's been signed with the `microservices-in-anger-course-rulz` secret using the HS256 algorithm)
+
+### API
+
 TODO - @mihaianghel
 
 ## Integrate with your tooling

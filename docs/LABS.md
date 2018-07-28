@@ -4,9 +4,58 @@
 
 Follow the instructions in [README.md](../README.md) to get started on setting up your tooling and environment.
 
+## Requirement
+
+You will be implementing a notifications service which uses microservices within an event driven environment for an airline
+company. The first API will deal with flight information and the second one with customer information. A traffic control
+officer will update the flight information and the system needs to notify the customers who have tickets for that flight.
+
+*Extra points*: You will build the dashboards API. This is processing the same events as the customer API but it formats
+and stores the data differently so it could be used by the flight information display system in the airports.
+
+Constraints:
+* The two services should communicate asynchronously - find the right AWS managed service
+* The HTTP request should include a jwt that is used for authorisation
+
+#### First API
+
+The first API will be responsible for flight information. It will expose an endpoint for updating existing flights. The
+request will go through an authorisation phase which will be done by decoding and checking a JWT (see details in the JWT
+section), and then it will update an existing record in the database. For simplicity this can be an in-memory store initialised
+from a file or an in-memory SQL DB like H2.
+
+Once the information is updated, it will send an update event to the message broker.
+
+*Extra points*: implement other endpoints for retrieving flights, creating flights. Pick a more complex DB implementation 
+like a DB-as-a-Service solution (https://mlab.com/) or even an AWS hosted DB like DynamoDB. Your choice!
+
+#### Second API
+
+This will be responsible for customer information. It will read the update event sent by the flight API, will identify 
+the customers who have tickets for that flight and notify them via email. For the email notifications part come up with 
+a solution. For the storage, please follow a similar approach to the one you chose for the first API.
+
+*Extra points*: implement other endpoints for retrieving customers, creating customer records and pick a more complex DB 
+implementation like in the case of the first API.
+
+#### Message broker
+
+This is the inter-service communication solution. Discuss with your team, come up with a solution and create a topic (push)
+or a queue (pull) in the corresponding AWS service. For push you should use SNS - Simple Notification Service and for pull
+SQS - Simple Queue Service, both being AWS managed services. Both have SDKs for Java and Javascript, keep in mind when coding
+your APIs!
+
 ## Plan the work ahead
 
-Add tasks to Trello and manage between the team. You can see what the requirements are below.
+Design your solution ahead, think about
+* what is your **data model** in each service?
+* what **endpoints** will you expose ?
+* what **storage solution** will you choose ?
+* **the inter-service communication** and how you want to implement it. 
+* **keeping it simple and don't over engineer the solution!**
+
+Come up with a solution diagram, discuss it with one of the course instructors and break the solution into tasks. Add 
+them to Trello and manage between the team.
 
 ## Skeleton API
 
@@ -29,11 +78,9 @@ We have provided some skeletons in the following folders, please use them:
 * Java with Spring Boot - [java-spring-service](../examples/java-spring-service)
 * NodeJS with Express - [node-express-service](../examples/node-express-service)
 
-## Implement the first API
-
 ### JWT
 
-Before you start your first API, you are given a JWT (found inside [../keys/jwt](../keys/kwt) that you have to decode 
+Before you start your first API, you are given a JWT (found inside [../keys/jwt](../keys/jwt) that you have to decode 
 in your service before you allow the request coming in (so an interceptor or filter would be best here). 
 
 You don't need to do any  signature verification, expiration and claim checks for this (which normally have to happen), 
@@ -49,9 +96,14 @@ As a bonus, if you have extra time, you can check implement additional validatio
 - check the token is not expired (this should not be the case, the generated token expires in one year)
 - check it's signed correctly (it's been signed with the `microservices-in-anger-course-rulz` secret using the HS256 algorithm)
 
-### API
-
-TODO - @mihaianghel
+### Useful links to get you started:
+* SES
+    - https://docs.aws.amazon.com/ses/latest/DeveloperGuide/send-using-sdk-java.html
+* SNS
+    - https://docs.aws.amazon.com/sns/latest/dg/SendMessageToHttp.html#SendMessageToHttp
+* SQS
+    - http://www.baeldung.com/aws-queues-java
+    - https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/examples-sqs.html
 
 ## Integrate with your tooling
 
@@ -59,8 +111,8 @@ Now that you have your first API, let's integrate it with Codecov and Codacy thr
 
 ### Codecov
 
-Navigate to https://codecov.io/gh and set up your project. You will get a token which you can use to upload the reports
-(you will find an example in the section below for CI), but it's something like:
+Navigate to https://codecov.io/gh and set up your project. You will get a token which you can use to upload the reports.
+This will be part of your CI pipeline config and you can find an example in [examples/.circleci/config.yml](examples/.circleci/config.yml), but it's something like:
 
 ```bash
 bash <(curl -s https://codecov.io/bash) -t <TOKEN_GOES_HERE>
@@ -90,14 +142,17 @@ Docker Hub (on the organisation you set up previously).
 
 ## Deployment
 
-Because of the current setup, we ned all commands to be run on the Master node via SSH. So to make things easier, we'll setup
-a SSH tunnel in the background that will forward all commands to the Swarm cluster (use the SSH key provided before).
+Because of the current setup, we need all the commands to be run on the Master node via SSH. So to make things easier, 
+we'll setup an SSH tunnel in the background that will forward all commands to the Swarm cluster (use the SSH key provided
+before).
 
 Before we do that though, you have to SSH to the master node and add the host to your known hosts (by typing 'yes' once you SSH):
 
 ```bash
 ssh -i ~/.ssh/docker-swarm.pem docker@YOUR_MASTER_INSTANCE_PUBLIC_IP
 ```
+
+*Note*: ```YOUR_MASTER_INSTANCE_PUBLIC_IP``` can be found in the AWS console -> EC2 and identify your Master node.
 
 After that, create the SSH tunnel:
 
@@ -153,10 +208,6 @@ Now you need to deploy your API in Docker Swarm and expose it, similar to Portai
 scalability.
 
 Once you have done this, please adapt your CI pipeline to do this deployment automatically for every *master branch commit*.
-
-## Implement the second API
-
-TODO - @mihaianghel
 
 ## NFRs
 

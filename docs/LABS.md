@@ -73,10 +73,10 @@ Now that all the tooling is done, we'll create our first repository by taking in
 - Deployment (scripts, packaging, pipeline support)
 - Update README containing instructions on how to build and run
 
-We have provided some skeletons in the following folders, please use them:
+We have provided some skeletons in the the following repositories, please use these:
 
-* Java with Spring Boot - [java-spring-service](../examples/java-spring-service)
-* NodeJS with Express - [node-express-service](../examples/node-express-service)
+* Java with Spring Boot - https://github.com/and-digital/java-spring-service
+* NodeJS with Express - https://github.com/and-digital/node-express-service
 
 ### JWT
 
